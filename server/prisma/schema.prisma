@@ -12,6 +12,13 @@ datasource db {
   provider = "postgresql"
 }
 
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CLOSED
+}
+
 model User{
   id Int @id @default(autoincrement())
   name String
@@ -24,10 +31,11 @@ model Lead{
   id Int @id @default(autoincrement())
   name String
   company String
-  email String
+  email String @unique
   phone String? //optional
-  status String @default("NEW")
+  status LeadStatus @default(NEW)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   userId Int
   user User @relation(fields: [userId], references: [id])
 }
