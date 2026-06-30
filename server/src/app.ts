@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth",authRoutes);
-app.use("/api", leadRoutes);
+app.use("/api/leads", leadRoutes);
 app.get("/", (req,res) => {
     res.json({
         success: true,
