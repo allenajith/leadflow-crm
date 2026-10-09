@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    /* old.reddit ran on Verdana. So do we. */
+    --font-sans: Verdana, Arial, Helvetica, sans-serif;
+    --font-heading: var(--font-sans);
+    --font-mono: Consolas, Monaco, monospace;
+
+    /* old.reddit chrome */
+    --color-reddit-orange: #ff4500;
+    --color-header-blue: #cee3f8;
+    --color-header-edge: #5f99cf;
+    --color-topbar: #f0f0f0;
+    --color-page: #ffffff;
+    --color-link: #0000ff;
+    --color-link-visited: #551a8b;
+    --color-meta: #888888;
+    --color-row-alt: #f7f7f8;
+    --color-rule: #e0e0e0;
+
+    /* pipeline stages, standing in for vote state */
+    --color-stage-new: #ff4500;
+    --color-stage-contacted: #5f99cf;
+    --color-stage-qualified: #349e48;
+    --color-stage-closed: #9a9a9a;
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+
+    /* 2008 had no border-radius */
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
+}
+
+:root {
+    --radius: 0px;
+
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --popover: #ffffff;
+    --popover-foreground: #000000;
+    --primary: #ff4500;
+    --primary-foreground: #ffffff;
+    --secondary: #eff7ff;
+    --secondary-foreground: #113355;
+    --muted: #f6f7f8;
+    --muted-foreground: #888888;
+    --accent: #cee3f8;
+    --accent-foreground: #113355;
+    --destructive: #d92b2b;
+    --border: #d5d5d5;
+    --input: #b4b4b4;
+    --ring: #5f99cf;
+
+    --sidebar: #f6f7f8;
+    --sidebar-foreground: #000000;
+    --sidebar-primary: #ff4500;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #cee3f8;
+    --sidebar-accent-foreground: #113355;
+    --sidebar-border: #5f99cf;
+    --sidebar-ring: #5f99cf;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    html {
+        @apply font-sans;
+        /* old.reddit's base was `x-small`, i.e. ~12px */
+        font-size: 12px;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        line-height: 1.4;
+    }
+
+    a {
+        color: var(--color-link);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
+@layer components {
+    /* The horizontal rule under the header, as seen on every old.reddit page. */
+    .rdt-tabbar {
+        background: var(--color-header-blue);
+        border-bottom: 1px solid var(--color-header-edge);
+    }
+
+    /* The bordered right-hand boxes: submit form, subreddit info, etc. */
+    .rdt-side-box {
+        border: 1px solid var(--color-header-edge);
+        background: var(--color-page);
+    }
+
+    .rdt-side-box-title {
+        background: var(--color-header-blue);
+        border-bottom: 1px solid var(--color-header-edge);
+        padding: 3px 6px;
+        font-weight: bold;
+        font-size: 11px;
+    }
+
+    /* Small grey text under a listing entry — old.reddit called it .tagline */
+    .rdt-tagline {
+        color: var(--color-meta);
+        font-size: 10px;
+    }
+
+    /* The "comments share save hide report" strip */
+    .rdt-actions {
+        font-size: 10px;
+        font-weight: bold;
+        color: var(--color-meta);
+    }
+
+    .rdt-actions a {
+        color: var(--color-meta);
+    }
+
+    .rdt-actions a:hover {
+        text-decoration: underline;
+    }
+}

@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { createLead,getLeads,getLeadById,updateLead } from "../controllers/lead.controller.js";
+import { createLead,getLeads,getLeadById,updateLead,deleteLead } from "../controllers/lead.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 const router = Router();
 router.post("/", protect, createLead);  
 router.get("/", protect, getLeads);
 router.get("/:id",protect,getLeadById);
 router.put("/:id", protect, updateLead);
-export default router;  
+router.delete("/:id", protect, deleteLead);
+export default router;
