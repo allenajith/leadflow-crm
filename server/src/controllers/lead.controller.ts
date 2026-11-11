@@ -10,14 +10,44 @@ export const createLead = async (req: AuthRequest, res: Response) => {
             message: "Unauthorized",
         });
     }
-    const lead = await prisma.lead.create({
-        data: {name, company, email, phone, status, userId,},
-    });
-    return res.status(201).json({
-        success: true,
-        message: "Lead created successfully",
-        lead,
-    });
+    try {
+        const existingLead = await prisma.lead.findUnique({
+            where: { email },
+        });
+
+        if (existingLead) {
+            return res.status(409).json({
+                success: false,
+                message: "A lead with this email already exists",
+            });
+        }
+
+        const lead = await prisma.lead.create({
+            data: {name, company, email, phone, status, userId,},
+        });
+        return res.status(201).json({
+            success: true,
+            message: "Lead created successfully",
+            lead,
+        });
+    } catch (error) {
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            error.code === "P2002"
+        ) {
+            return res.status(409).json({
+                success: false,
+                message: "A lead with this email already exists",
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to create lead",
+        });
+    }
 };
 export const getLeads = async (
     req: AuthRequest,
