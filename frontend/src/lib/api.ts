@@ -1,11 +1,6 @@
 import type { Lead, LeadInput, User } from "./types"
 
-/**
- * Relative — vite.config.ts proxies /api to the Express server on :5000,
- * so there is no base URL to configure and no CORS in development.
- */
 const BASE = "/api"
-
 const TOKEN_KEY = "leadflow.token"
 const USER_KEY = "leadflow.user"
 
@@ -50,18 +45,12 @@ async function request<T extends ApiShape>(
   init: RequestInit = {}
 ): Promise<T> {
   const token = getToken()
+  const headers = new Headers(init.headers)
+  headers.set("Content-Type", "application/json")
+  if (token) headers.set("Authorization", `Bearer ${token}`)
 
-  const res = await fetch(`${BASE}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers,
-    },
-  })
+  const res = await fetch(`${BASE}${path}`, { ...init, headers })
 
-  // The server always replies with JSON, but a proxy error or a crash
-  // can still produce HTML — don't let that surface as a parse error.
   let body: T
   try {
     body = (await res.json()) as T

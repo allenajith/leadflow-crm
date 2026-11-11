@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function Leads() {
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const view = params.get("view")
+  const search = params.get("q") ?? ""
+  const stage = params.get("stage") ?? "all"
 
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,10 +52,21 @@ export function Leads() {
 
   const visible = useMemo(
     () =>
-      view === "closed"
-        ? leads.filter((l) => l.status === "CLOSED")
-        : leads.filter((l) => l.status !== "CLOSED"),
-    [leads, view]
+      leads.filter((lead) => {
+        const inView =
+          view === "closed"
+            ? lead.status === "CLOSED"
+            : lead.status !== "CLOSED"
+        const inStage = stage === "all" || lead.status === stage
+        const needle = search.trim().toLowerCase()
+        const matchesSearch =
+          !needle ||
+          [lead.name, lead.company, lead.email, lead.phone ?? ""].some((value) =>
+            value.toLowerCase().includes(needle)
+          )
+        return inView && inStage && matchesSearch
+      }),
+    [leads, search, stage, view]
   )
 
   const counts = useMemo(() => {
@@ -102,9 +115,46 @@ export function Leads() {
     }
   }
 
+  function updateListParams(next: { q?: string; stage?: string }) {
+    const nextParams = new URLSearchParams(params)
+    if (next.q?.trim()) nextParams.set("q", next.q.trim())
+    else nextParams.delete("q")
+    if (next.stage && next.stage !== "all") nextParams.set("stage", next.stage)
+    else nextParams.delete("stage")
+    setParams(nextParams, { replace: true })
+  }
+
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col gap-4 md:flex-row">
       <div className="min-w-0 flex-1">
+        <div className="mb-2 flex flex-col gap-2 border-b border-rule pb-2 sm:flex-row">
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">search leads</span>
+            <input
+              value={search}
+              onChange={(e) => {
+                updateListParams({ q: e.target.value, stage })
+              }}
+              placeholder="search name, company or email"
+              className="w-full border border-input bg-white px-[5px] py-[3px] text-[12px] outline-none focus:border-header-edge"
+            />
+          </label>
+          <label className="shrink-0">
+            <span className="sr-only">filter by stage</span>
+            <select
+              value={stage}
+              onChange={(e) => updateListParams({ q: search, stage: e.target.value })}
+              className="w-full border border-input bg-white px-[5px] py-[3px] text-[12px] outline-none focus:border-header-edge sm:w-[130px]"
+            >
+              <option value="all">all stages</option>
+              {LEAD_STAGES.map((s) => (
+                <option key={s} value={s}>
+                  {STAGE_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         {loading && <p className="p-2 text-[11px] text-meta">loading...</p>}
 
         {loadError && (
@@ -118,8 +168,10 @@ export function Leads() {
 
         {!loading && !loadError && visible.length === 0 && (
           <p className="p-2 text-[11px] text-meta">
-            {view === "closed"
-              ? "nothing closed yet."
+            {search || stage !== "all"
+              ? "nothing matched your search."
+              : view === "closed"
+                ? "nothing closed yet."
               : "no leads in the pipeline. submit one on the right."}
           </p>
         )}
@@ -139,7 +191,7 @@ export function Leads() {
         </div>
       </div>
 
-      <aside className="w-[300px] shrink-0">
+      <aside className="w-full shrink-0 md:w-[300px]">
         <SideBox title="submit a lead">
           <Button size="sm" className="w-full" onClick={() => setCreating(true)}>
             new lead
